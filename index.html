@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Login Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Raleway:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-start: #0d1b2a;
+      --bg-end: #1b263b;
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.10);
+      --accent: #00c9a7;
+      --accent-dark: #009e84;
+      --accent-glow: rgba(0, 201, 167, 0.30);
+      --danger: #ff6b6b;
+      --danger-glow: rgba(255, 107, 107, 0.25);
+      --warn: #ffd166;
+      --text: #e0e6ed;
+      --text-muted: rgba(224, 230, 237, 0.45);
+      --input-bg: rgba(255,255,255,0.07);
+      --input-border: rgba(255,255,255,0.13);
+      --radius: 14px;
+      --shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(145deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Animated background circles */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(0,201,167,0.12), transparent 70%);
+      top: -100px; left: -100px;
+      animation: float1 8s ease-in-out infinite;
+    }
+    body::after {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(255,107,107,0.10), transparent 70%);
+      bottom: -80px; right: -80px;
+      animation: float2 10s ease-in-out infinite;
+    }
+
+    @keyframes float1 {
+      0%, 100% { transform: translate(0,0); }
+      50% { transform: translate(30px, 20px); }
+    }
+    @keyframes float2 {
+      0%, 100% { transform: translate(0,0); }
+      50% { transform: translate(-20px, -30px); }
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 44px 38px 36px;
+      width: 360px;
+      box-shadow: var(--shadow);
+      animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Logo / Icon */
+    .logo {
+      width: 58px; height: 58px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+      box-shadow: 0 8px 24px var(--accent-glow);
+      font-size: 26px;
+    }
+
+    /* Heading */
+    .card h1 {
+      font-family: 'Raleway', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      text-align: center;
+      letter-spacing: 0.5px;
+      margin-bottom: 28px;
+    }
+    .card .subtitle {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      margin-bottom: 30px;
+      letter-spacing: 0.3px;
+    }
+
+    /* Form fields */
+    .field {
+      margin-bottom: 16px;
+    }
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+      margin-bottom: 7px;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap .icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 14px 12px 38px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+    }
+    input:focus {
+      border-color: var(--accent);
+      background: rgba(0,201,167,0.07);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    input::placeholder { color: rgba(255,255,255,0.2); font-weight: 400; }
+    input:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Show/hide password toggle */
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-muted);
+      padding: 0;
+      width: auto;
+      box-shadow: none;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--accent); transform: translateY(-50%) scale(1.1); }
+
+    /* Login button */
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      margin-top: 6px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #0d1b2a;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: transform 0.15s, box-shadow 0.2s, opacity 0.3s;
+      box-shadow: 0 6px 20px var(--accent-glow);
+    }
+    .btn-login:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px var(--accent-glow);
+    }
+    .btn-login:active:not(:disabled) { transform: translateY(0); }
+    .btn-login:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Message box */
+    #message {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      min-height: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+    }
+    #message.show { max-height: 160px; }
+    #message.success {
+      background: rgba(0,201,167,0.13);
+      color: var(--accent);
+      border: 1px solid rgba(0,201,167,0.3);
+    }
+    #message.error {
+      background: rgba(255,107,107,0.13);
+      color: var(--danger);
+      border: 1px solid rgba(255,107,107,0.3);
+    }
+    #message.locked {
+      background: rgba(255,209,102,0.13);
+      color: var(--warn);
+      border: 1px solid rgba(255,209,102,0.35);
+    }
+
+    /* Attempts dots */
+    .attempts-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .attempts-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+    .dots {
+      display: flex;
+      gap: 7px;
+    }
+    .dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transition: background 0.35s, transform 0.25s;
+    }
+    .dot.used {
+      background: var(--danger);
+      transform: scale(1.2);
+      box-shadow: 0 0 6px var(--danger-glow);
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--card-border);
+      margin: 22px 0 16px;
+    }
+
+    /* Footer hint */
+    .footer {
+      text-align: center;
+      font-size: 10.5px;
+      color: var(--text-muted);
+      letter-spacing: 0.4px;
+      line-height: 1.6;
+    }
+
+    /* Logout button */
+    .btn-logout {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: transparent;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.2s, color 0.2s, transform 0.15s;
+      display: none;
+    }
+    .btn-logout:hover {
+      background: var(--accent);
+      color: #0d1b2a;
+      transform: translateY(-1px);
+    }
+
+    /* Countdown timer display */
+    .countdown {
+      display: block;
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--warn);
+      margin: 4px 0 2px;
+      letter-spacing: 2px;
+      font-family: 'Raleway', sans-serif;
+      line-height: 1;
+    }
+    .countdown-label {
+      display: block;
+      font-size: 10px;
+      color: rgba(255,209,102,0.6);
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+    .lock-msg-text {
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    /* Shake animation for wrong password */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+  </style>
+</head>
+<body>
+
+  <div class="card" id="card">
+    <div class="logo">🎓</div>
+    <h1>Student Login Portal</h1>
+
+    <div class="field">
+      <label>Username</label>
+      <div class="input-wrap">
+        <span class="icon">👤</span>
+        <input type="text" id="username" placeholder="Enter your username" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <span class="icon">🔒</span>
+        <input type="password" id="password" placeholder="Enter your password" autocomplete="off" />
+        <button class="toggle-pw" onclick="togglePassword()" id="toggleBtn" title="Show/Hide Password">👁</button>
+      </div>
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="login()">Login</button>
+    <button class="btn-logout" id="logoutBtn" onclick="logout()">🔄 Log Out / Switch Account</button>
+
+    <div id="message"></div>
+
+    <div class="attempts-row">
+      <span class="attempts-label">Attempts:</span>
+      <div class="dots">
+        <div class="dot" id="dot1"></div>
+        <div class="dot" id="dot2"></div>
+        <div class="dot" id="dot3"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p class="footer">
+      <strong style="color: rgba(224,230,237,0.7); font-size: 11px;">West Visayas State University – Janiuay Campus</strong><br>
+      CIT 238 – Mobile Application Development<br>
+      2nd Semester SY 2025–2026 · BSIT 3 Final Practical Exam
+    </p>
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────────
+    // TASK 1 & TASK 2: Users list
+    // Task 1 → Joanne / 2005 (student's first name & birth year)
+    // Task 2 → 4 users total (admin, student1, student2 + Joanne)
+    // ─────────────────────────────────────────────
+    var users = [
+      { username: "Joanne",   password: "2005" },  // Task 1
+      { username: "admin",    password: "1234" },  // Task 2
+      { username: "student1", password: "1111" },  // Task 2
+      { username: "student2", password: "2222" }   // Task 2 (added)
+    ];
+
+    // ─────────────────────────────────────────────
+    // TASK 3: Login attempts limit variables
+    // ─────────────────────────────────────────────
+    var attempts   = 0;
+    var maxAttempts = 3;
+    var isLocked   = false;
+
+    // ─────────────────────────────────────────────
+    // LOGIN FUNCTION — handles Tasks 1–5
+    // ─────────────────────────────────────────────
+    function login() {
+      if (isLocked) return;
+
+      var userInput  = document.getElementById("username").value.trim();
+      var passInput  = document.getElementById("password").value;
+      var messageEl  = document.getElementById("message");
+
+      // Find matching user
+      var matchedUser = null;
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].username === userInput && users[i].password === passInput) {
+          matchedUser = users[i];
+          break;
+        }
+      }
+
+      if (matchedUser) {
+        // ── TASK 5: Welcome message ──────────────
+        showMessage("✅  Welcome, " + matchedUser.username + "!", "success");
+        document.getElementById("loginBtn").disabled = true;
+        document.getElementById("loginBtn").style.display = "none";
+        document.getElementById("logoutBtn").style.display = "block";
+        document.getElementById("username").disabled = true;
+        document.getElementById("password").disabled = true;
+        document.getElementById("toggleBtn").disabled = true;
+
+      } else {
+        // ── TASK 3: Track wrong attempts ─────────
+        attempts++;
+        updateDots();
+
+        // Shake the card
+        var card = document.getElementById("card");
+        card.classList.remove("shake");
+        void card.offsetWidth; // reflow to restart animation
+        card.classList.add("shake");
+
+        if (attempts >= maxAttempts) {
+          // Locked — start 5 min countdown
+          isLocked = true;
+          document.getElementById("loginBtn").disabled = true;
+          document.getElementById("username").disabled = true;
+          document.getElementById("password").disabled = true;
+          document.getElementById("toggleBtn").disabled = true;
+          startLockCountdown(5 * 60); // 5 minutes in seconds
+        } else {
+          var left = maxAttempts - attempts;
+          showMessage(
+            "❌  Invalid Username or Password! " + left + " attempt" + (left > 1 ? "s" : "") + " remaining.",
+            "error"
+          );
+        }
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    // HELPERS
+    // ─────────────────────────────────────────────
+    function showMessage(text, type) {
+      var el = document.getElementById("message");
+      el.className = type + " show";
+      el.innerHTML = text;
+    }
+
+    function updateDots() {
+      for (var i = 1; i <= 3; i++) {
+        if (i <= attempts) {
+          document.getElementById("dot" + i).classList.add("used");
+        }
+      }
+    }
+
+    var countdownInterval = null;
+
+    function startLockCountdown(seconds) {
+      var remaining = seconds;
+
+      function formatTime(s) {
+        var m = Math.floor(s / 60);
+        var sec = s % 60;
+        return (m < 10 ? "0" : "") + m + ":" + (sec < 10 ? "0" : "") + sec;
+      }
+
+      function updateDisplay() {
+        var el = document.getElementById("message");
+        el.className = "locked show";
+        el.innerHTML =
+          "<span class='lock-msg-text'>🔒 Account Locked! Too many failed attempts.</span>" +
+          "<span class='countdown'>" + formatTime(remaining) + "</span>" +
+          "<span class='countdown-label'>Try again after the timer ends</span>";
+      }
+
+      updateDisplay();
+
+      countdownInterval = setInterval(function() {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          unlockAfterTimeout();
+        } else {
+          updateDisplay();
+        }
+      }, 1000);
+    }
+
+    function unlockAfterTimeout() {
+      isLocked = false;
+      attempts = 0;
+
+      document.getElementById("username").disabled = false;
+      document.getElementById("password").disabled = false;
+      document.getElementById("toggleBtn").disabled = false;
+      document.getElementById("loginBtn").disabled = false;
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("password").type = "password";
+
+      // Reset dots
+      for (var i = 1; i <= 3; i++) {
+        document.getElementById("dot" + i).classList.remove("used");
+      }
+
+      // Show unlocked message briefly
+      var el = document.getElementById("message");
+      el.className = "success show";
+      el.innerHTML = "✅ Account unlocked! You may try again.";
+
+      // Focus username
+      document.getElementById("username").focus();
+
+      // Clear message after 3 seconds
+      setTimeout(function() {
+        el.className = "";
+        el.innerHTML = "";
+      }, 3000);
+    }
+
+    function logout() {
+      // Reset all fields and state
+      attempts = 0;
+      isLocked = false;
+      if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+
+      document.getElementById("username").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("username").disabled = false;
+      document.getElementById("password").disabled = false;
+      document.getElementById("toggleBtn").disabled = false;
+      document.getElementById("password").type = "password";
+
+      document.getElementById("loginBtn").disabled = false;
+      document.getElementById("loginBtn").style.display = "block";
+      document.getElementById("logoutBtn").style.display = "none";
+
+      // Clear message
+      var el = document.getElementById("message");
+      el.className = "";
+      el.innerHTML = "";
+
+      // Reset dots
+      for (var i = 1; i <= 3; i++) {
+        document.getElementById("dot" + i).classList.remove("used");
+      }
+
+      // Focus back on username
+      document.getElementById("username").focus();
+    }
+
+    function togglePassword() {
+      var pw = document.getElementById("password");
+      pw.type = (pw.type === "password") ? "text" : "password";
+    }
+
+    // Enter key support
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !isLocked) login();
+    });
+  </script>
+</body>
+</html>
